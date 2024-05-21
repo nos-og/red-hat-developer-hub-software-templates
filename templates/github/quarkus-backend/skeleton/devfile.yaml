@@ -16,6 +16,7 @@ components:
           name: quarkus-dev
           targetPort: 8080
           protocol: https
+          path: /q/dev
         - exposure: public
           name: swagger-ui
           targetPort: 8080

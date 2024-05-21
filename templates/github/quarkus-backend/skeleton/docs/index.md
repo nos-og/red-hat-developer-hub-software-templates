@@ -1,9 +1,8 @@
-## docs for ${{ parameters.repoName }}
+## docs for ${{ values.repoName }}
 
 description
 
-
-## APIs
+### APIs
 
 - /hello
 - /hello/greetings/{name}

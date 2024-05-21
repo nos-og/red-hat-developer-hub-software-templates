@@ -1,7 +1,7 @@
-site_name: 'Document for ${{ parameters.repoName }}'
+site_name: 'Document for ${{ values.repoName }}'
 
 nav:
-  - HomeDir: index.md
+  - ${{ values.repoName}} : index.md
 
 plugins:
   - techdocs-core
