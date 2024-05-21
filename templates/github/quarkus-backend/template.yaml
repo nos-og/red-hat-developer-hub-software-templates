@@ -223,6 +223,8 @@ spec:
 
   output:
     links:
+      - title: Open Dev Spaces Portal
+        url: https://devspaces.apps.cap.techlab.netone.co.jp/
       - title: Open the Source Code Repository
         url: ${{ steps.publish.output.remoteUrl }}
       - title: Open the Catalog Info Component

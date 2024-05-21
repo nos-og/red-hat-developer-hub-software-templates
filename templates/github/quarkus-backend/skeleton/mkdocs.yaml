@@ -1,0 +1,8 @@
+site_name: 'Document for ${{ parameters.repoName }}'
+
+nav:
+  - HomeDir: index.md
+
+plugins:
+  - techdocs-core
+
