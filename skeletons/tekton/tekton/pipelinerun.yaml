@@ -19,7 +19,7 @@ spec:
       value: ${{ values.imageRepository }}/${{ values.imageUrl }}/${{ values.repoName }}
   pipelineRef:
     name: ${{ values.repoName }}-pipeline
-  serviceAccountName: build-bot
+  serviceAccountName: pipeline
   workspaces:
     - name: source-folder
       volumeClaimTemplate:
@@ -29,4 +29,7 @@ spec:
           resources:
             requests:
               storage: 1Gi
+    - name: git-creds
+      secret:
+        secretName: git-creds
 

@@ -42,6 +42,11 @@ spec:
               kind:
                 - Group
                 - User
+        tag:
+          title: Tag
+          type: string
+          default: java
+
         system:
           title: System
           type: string
@@ -193,6 +198,7 @@ spec:
           system: ${{ parameters.system }}
           applicationType: api
           description: ${{ parameters.description }}
+          tag: ${{ parameters.tag }}
           namespace: ${{ parameters.namespace }}
           imageUrl: ${{ parameters.imageUrl }}
           imageBuilder: s2i-java
@@ -212,7 +218,7 @@ spec:
         description: ${{ parameters.description }}
         repoUrl: github.com?owner=${{ parameters.orgName }}&repo=${{ parameters.repoName }}
         defaultBranch: main
-        repoVisibility: public
+        repoVisibility: private
 
     - id: register
       name: Registering the Catalog Info Component

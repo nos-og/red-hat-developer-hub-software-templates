@@ -18,6 +18,10 @@ metadata:
   {%- if values.description %}
   description: ${{ values.description }}
   {%- endif %}
+  {%- if values.tag %}
+  tags:
+    - ${{ values.tag }}
+  {%- endif %}
   annotations:
     {%- if values.hostUrl %}
     argocd/app-name: ${{ name }}

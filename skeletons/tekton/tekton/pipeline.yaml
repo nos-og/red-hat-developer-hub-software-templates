@@ -32,6 +32,8 @@ spec:
       workspaces:
         - name: output
           workspace: source-folder
+        - name: basic-auth
+          workspace: git-creds
     - name: ${{ values.imageBuilder }}
       params:
         - name: VERSION
@@ -48,3 +50,4 @@ spec:
           workspace: source-folder
   workspaces:
     - name: source-folder
+    - name: git-creds
