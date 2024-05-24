@@ -1,9 +1,9 @@
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
-  name: quarkus-backend-template
-  title: Create a Quarkus Backend application with a CI pipeline
-  description: Create a starter Quarkus Backend application with a CI pipeline
+  name: nos-quarkus-template
+  title: Create a Quarkus Backend application with a CI/CD pipeline
+  description: Create a Quarkus application with a CI/CD pipeline
   tags:
     - quarkus
     - java
@@ -185,6 +185,18 @@ spec:
           artifactId: ${{ parameters.artifactId }}
           javaPackageName: ${{ parameters.javaPackageName}}
           sourceControl: github.com
+    
+    - id: cdTemplate
+      name: Generate the CD Component
+      action: fetch:template
+      input:
+        url: ../../../skeletons/argocd-manifests/
+        values:
+          orgName: ${{ parameters.orgName }}
+          repoName: ${{ parameters.repoName }}
+          namespace: ${{ parameter.namespace }}
+          owner: ${{ parameter.owner }}
+          sourceControl: github.com
 
     - id: catalogTemplate
       name: Generating the Catalog Info Component
@@ -217,6 +229,16 @@ spec:
         allowedHosts: ['github.com']
         description: ${{ parameters.description }}
         repoUrl: github.com?owner=${{ parameters.orgName }}&repo=${{ parameters.repoName }}
+        defaultBranch: main
+        repoVisibility: private
+
+    - id: publishCD
+      name: Publishing to the CD manifest Repository
+      action: publish:github
+      input:
+        allowedHosts: ['github.com']
+        description: $${{ parameters.description }}
+        repoUrl: github.com?owner=${{ parameters.orgName }}&repo=${{ parameters.repoName }}-cd
         defaultBranch: main
         repoVisibility: private
 

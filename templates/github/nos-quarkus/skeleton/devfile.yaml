@@ -1,0 +1,37 @@
+schemaVersion: 2.2.0
+metadata:
+  name: ${{ values.repoName }}-workspace
+components:
+  - name: quarkus-dev
+    container:
+      sourceMapping: /projects
+      memoryLimit: 8Gi
+      memoryRequest: 512Mi
+      volumeMounts:
+        - name: m2
+          path: /home/user/.m2
+      image: registry.redhat.io/devspaces/udi-rhel8
+      endpoints:
+        - exposure: public
+          name: quarkus-dev
+          targetPort: 8080
+          protocol: https
+          path: /q/dev
+        - exposure: public
+          name: swagger-ui
+          targetPort: 8080
+          protocol: https
+          path: /q/swagger-ui
+      env:
+        - name: CHE_PLUGIN_REGISTRY_URL
+          value: https://open-vsx.org
+  - name: m2
+    volume:
+      size: 2Gi
+commands:
+  - exec:
+      commandLine: mvn quarkus:dev
+      component: quarkus-dev
+      workingDir: '/projects/${{ values.repoName }}'
+      label: Start Quarkus in Dev Mode ${{ values.repoName }}
+    id: quarkus-dev-mode
