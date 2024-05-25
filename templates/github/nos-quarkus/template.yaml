@@ -2,8 +2,8 @@ apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
   name: nos-quarkus-template
-  title: Create a Quarkus Backend application with a CI/CD pipeline
-  description: Create a Quarkus application with a CI/CD pipeline
+  title: [NOS] Create a Quarkus application with a CI/CD pipeline
+  description: [NOS] Create a Quarkus application with a CI/CD pipeline
   tags:
     - quarkus
     - java
