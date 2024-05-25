@@ -19,4 +19,5 @@ spec:
     - templates/github/tekton/template.yaml
     - templates/github/techdocs/template.yaml
     - templates/github/nos-quarkus/template.yaml
+    - templates/github/nos-argocd/template.yaml
 

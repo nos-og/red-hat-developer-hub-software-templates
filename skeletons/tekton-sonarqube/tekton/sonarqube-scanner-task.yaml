@@ -2,6 +2,7 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: sonarqube-scanner
+  namespace: ${{ values.namespace }}
   labels:
     app.kubernetes.io/version: "0.4"
   annotations:

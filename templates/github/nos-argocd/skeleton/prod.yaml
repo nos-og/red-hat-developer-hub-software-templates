@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ${{values.repoName }}-prod
+  namespace: openshift-gitops
+spec:
+  destination:
+    namespace: ${{values.repoName }}-prod
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    repoURL: https://github.com/${{ values.orgName }}/${{ values.repoName }}-gitops
+    path: manifests/overlays/prod
+    targetRevision: main
+  syncPolicy:
+    automated:
+      selfHeal: true

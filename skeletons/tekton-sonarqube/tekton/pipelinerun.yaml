@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
-  name: ${{ values.repoName }}-pipeline-run-init
+  generateName: ${{ values.repoName }}-pipeline-run-
   namespace: ${{ values.namespace }}
   annotations:
     argocd.argoproj.io/hook: PostSync
@@ -16,7 +16,7 @@ spec:
     - name: source-branch
       value: main
     - name: output-image
-      value: ${{ values.imageRepository }}/${{ values.imageUrl }}/${{ values.repoName }}
+      value: ${{ values.imageRepository }}/${{ values.namespace }}/${{ values.repoName }}
   pipelineRef:
     name: ${{ values.repoName }}-pipeline
   serviceAccountName: pipeline

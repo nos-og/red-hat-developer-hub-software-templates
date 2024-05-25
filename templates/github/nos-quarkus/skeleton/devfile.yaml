@@ -29,9 +29,47 @@ components:
     volume:
       size: 2Gi
 commands:
-  - exec:
+  - id: quarkus-dev-mode
+    exec:
       commandLine: mvn quarkus:dev
       component: quarkus-dev
       workingDir: '/projects/${{ values.repoName }}'
-      label: Start Quarkus in Dev Mode ${{ values.repoName }}
-    id: quarkus-dev-mode
+      label: Start Quarkus in Dev Mode
+  - id: create-ns
+    exec:
+      commandLine: oc apply -f tekton/namespace.yaml
+      component: quarkus-dev
+      workingDir: '/projects/${{ values.repoName }}'
+      label: Create namespace for CI
+  - id: create-ci-pipeline
+    exec:
+      commandLine: oc create -f tekton
+      component: quarkus-dev
+      workingDir: '/projects/${{ values.repoName }}'
+      label: Create Tekton CI Pipelin
+  - id: run-ci-pipeline
+    exec:
+      commandLine: oc create -f tekton/pipelinerun.yaml
+      component: quarkus-dev
+      workingDir: '/projects/${{ values.repoName }}'
+      label: Run Tekton CI Pipelin
+  - id: update-imgdigest-prod
+    exec:
+      commandLine: 'imgDigest=$(oc get taskruns.tekton.dev -n ${{ values.namespace }} -l tekton.dev/clusterTask=s2i-java --sort-by=.status.completionTime -o=json | jq -r .items[].status.results[].value | tail -n1) && sed -i "s/digest: .*/digest: $imgDigest/"  manifests/overlays/prod/kustomization.yaml'
+      component: quarkus-dev
+      workingDir: '/projects/${{ values.repoName }}-gitops'
+      label: Update latest imageTag for prod environment
+  - id: update-imgdigest-stage
+    exec:
+      commandLine: 'imgDigest=$(oc get taskruns.tekton.dev -n ${{ values.namespace }} -l tekton.dev/clusterTask=s2i-java --sort-by=.status.completionTime -o=json | jq -r .items[].status.results[].value | tail -n1) && sed -i "s/digest: .*/digest: $imgDigest/"  manifests/overlays/stage/kustomization.yaml'
+      component: quarkus-dev
+      workingDir: '/projects/${{ values.repoName }}-gitops'
+      label: Update latest imageTag for stage environment
+  - id: commit-gitops-repo
+    exec:
+      commandLine: 'git add -A && read -p "Commit message : " msg; git commit -m $msg && git push origin main'
+      component: quarkus-dev
+      workingDir: '/projects/${{ values.repoName }}-gitops'
+      label: Commit & Push gitops repo to github
+
+

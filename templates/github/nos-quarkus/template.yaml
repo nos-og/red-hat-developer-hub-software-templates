@@ -2,15 +2,15 @@ apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
   name: nos-quarkus-template
-  title: [NOS] Create a Quarkus application with a CI/CD pipeline
-  description: [NOS] Create a Quarkus application with a CI/CD pipeline
+  title: Create a Quarkus Backend application with a CI pipeline
+  description: NOS - Create a Quarkus app with a CI pipeline
   tags:
     - quarkus
     - java
     - maven
 spec:
-  owner: janus-authors
-  system: janus-idp
+  owner: m-nara
+  system: NOS
   type: service
 
   parameters:
@@ -112,7 +112,6 @@ spec:
             - required:
                 - imageRepository
                 - namespace
-                - imageUrl
               properties:
                 ci:
                   const: ../../../skeletons/tekton-sonarqube/
@@ -126,16 +125,11 @@ spec:
                   enumNames:
                     - Quay
                     - Internal OpenShift Registry
-                imageUrl:
-                  title: Image URL
-                  type: string
-                  description: The Quay.io or OpenShift Image URL <REGISTRY>/<IMAGE_URL>/<REPO_NAME>
-                  default: demo
                 namespace:
-                  title: Namespace
+                  title: Image URL / Namespace
                   type: string
-                  description: The namespace for deploying resources
-                  default: demo
+                  description: The namespace for deploying resources. The Quay.io or OpenShift Image URL <REGISTRY>/<IMAGE_URL>/<REPO_NAME>
+                  default: demons
   steps:
     - id: template
       name: Generating the Source Code Component
@@ -150,7 +144,6 @@ spec:
           applicationType: api
           description: ${{ parameters.description }}
           namespace: ${{ parameters.namespace }}
-          imageUrl: ${{ parameters.imageUrl }}
           imageBuilder: s2i-java
           imageRepository: ${{ parameters.imageRepository }}
           port: ${{ parameters.port }}
@@ -176,7 +169,6 @@ spec:
           applicationType: api
           description: ${{ parameters.description }}
           namespace: ${{ parameters.namespace }}
-          imageUrl: ${{ parameters.imageUrl }}
           imageBuilder: s2i-java
           imageRepository: ${{ parameters.imageRepository }}
           port: ${{ parameters.port }}
@@ -184,18 +176,6 @@ spec:
           groupId: ${{ parameters.groupId }}
           artifactId: ${{ parameters.artifactId }}
           javaPackageName: ${{ parameters.javaPackageName}}
-          sourceControl: github.com
-    
-    - id: cdTemplate
-      name: Generate the CD Component
-      action: fetch:template
-      input:
-        url: ../../../skeletons/argocd-manifests/
-        values:
-          orgName: ${{ parameters.orgName }}
-          repoName: ${{ parameters.repoName }}
-          namespace: ${{ parameter.namespace }}
-          owner: ${{ parameter.owner }}
           sourceControl: github.com
 
     - id: catalogTemplate
@@ -212,7 +192,6 @@ spec:
           description: ${{ parameters.description }}
           tag: ${{ parameters.tag }}
           namespace: ${{ parameters.namespace }}
-          imageUrl: ${{ parameters.imageUrl }}
           imageBuilder: s2i-java
           imageRepository: ${{ parameters.imageRepository }}
           port: ${{ parameters.port }}
@@ -220,6 +199,23 @@ spec:
           groupId: ${{ parameters.groupId }}
           artifactId: ${{ parameters.artifactId }}
           javaPackageName: ${{ parameters.javaPackageName}}
+          sourceControl: github.com
+
+    - id: manifestsTemplate
+      name: Generating the CD Manifests Component
+      action: fetch:template
+      input:
+        url: .../nos-argocd/skeleton/
+        values:
+          orgName: ${{ parameters.orgName }}
+          repoName: ${{ parameters.repoName }}
+          owner: ${{ parameters.owner }}
+          system: ${{ parameters.system }}
+          applicationType: gitops
+          description: Contains the ArgoCD manifests for ${{ parameters.repoName }}
+          namespace: ${{ parameters.namespace }}
+          imageRepository: ${{ parameters.imageRepository }}
+          port: ${{ parameters.port }}
           sourceControl: github.com
 
     - id: publish
@@ -232,15 +228,13 @@ spec:
         defaultBranch: main
         repoVisibility: private
 
-    - id: publishCD
-      name: Publishing to the CD manifest Repository
-      action: publish:github
+    - id: clearp-workspace
+      name: Clear Workspace
+      action: fs:delete
       input:
-        allowedHosts: ['github.com']
-        description: $${{ parameters.description }}
-        repoUrl: github.com?owner=${{ parameters.orgName }}&repo=${{ parameters.repoName }}-cd
-        defaultBranch: main
-        repoVisibility: private
+        files:
+          - '*'
+          - '.git'
 
     - id: register
       name: Registering the Catalog Info Component

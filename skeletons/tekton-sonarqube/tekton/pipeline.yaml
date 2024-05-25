@@ -17,8 +17,12 @@ spec:
       type: string
     - name: output-image
       description: reference of the image that will get created
-      default: ${{ values.imageRepository }}/${{ values.imageUrl }}/${{ values.repoName }}
+      default: ${{ values.imageRepository }}/${{ values.namespace }}/${{ values.repoName }}
       type: string
+  results:
+    - name : imagetag
+      description: image
+      value: $(tasks.${{ values.imageBuilder }}.results.IMAGE_DIGEST)
   tasks:
     - name: git-clone
       params:
